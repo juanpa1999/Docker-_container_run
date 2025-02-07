@@ -1,0 +1,62 @@
+
+services:
+  db:
+    image: jpcc141999/db_jenkis:${LATEST_TAG_DB}
+    restart: always
+    networks:
+      - dnet
+    volumes:
+      - /home/data:/var/lib/postgresql/data
+
+
+  back:
+    image: jpcc141999/back_jenkis:${LATEST_TAG_BACK}
+    restart: always
+    networks:
+      - dnet
+    environment:
+      - DB_HOST=db
+    expose:
+      - "8000"
+    depends_on:
+      - db
+ 
+
+  nginx:
+    image: jpcc141999/front_jenkis:${LATEST_TAG_FRONT}
+    restart: always
+    networks:
+      - dnet
+    volumes:
+    # en este volumen debes pasar la ruta del servidor host, ya que jenkis le esta pasando la ruta del contenedor de jenkis y ese es el problema
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    #por ejemplo si pones solo .nginx.conf, osea haciedno referencia del archivo que esta es el mismo directorio donde esta el yml file, no se va a poder, ya que jenkis fue montado,
+    #para tomar los recursos del servidor padre osea la maquina host (ec2 de amazon, o tu maquina local), asi que cuando vayas a compartor un documento es documento esta en el workspace
+    #del ael servidor padre
+    expose:
+      - "80"
+    environment:
+      - VIRTUAL_HOST=pablodevops.com,www.pablodevops.com
+    depends_on:
+      - back
+
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      # - "443:443"
+    volumes:
+      - /run/docker.sock:/tmp/docker.sock:ro
+      # - ./nginx/certs:/etc/nginx/certs:ro
+      # - ./nginx/vhost.d:/etc/nginx/vhost.d  # Montar la configuración de vhost
+      # - ./nginx/html:/usr/share/nginx/html
+    networks:
+      - dnet
+
+
+networks:
+  dnet:
+    driver: bridge
+  
