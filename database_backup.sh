@@ -11,11 +11,11 @@ sudo docker exec -t CONTAINER_NAME pg_dump -U USER -d DATA_BASE_NAME -F c -f /ba
 sleep 3
 # Una vez creado el backup dentro del contenedor, cópialo a tu máquina con
 
-sudo docker cp CONTAINER_NAME:/backup.dump ./backup.dump
+sudo docker cp CONTAINER_NAME:/backup.dump /home/backup.dump
 
 sleep 3
 
-aws s3 cp ./backup.dump s3://pablodevops-bucket-terraform/ --recursive
+aws s3 cp /home/backup.dump s3://pablodevops-bucket-terraform/
 
 
 #echo "restore in progress"
