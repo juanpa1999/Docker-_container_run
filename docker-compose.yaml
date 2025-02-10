@@ -37,6 +37,8 @@ services:
       - "80"
     environment:
       - VIRTUAL_HOST=pablodevops.com,www.pablodevops.com
+      - LETSENCRYPT_HOST=pablodevops.com,www.pablodevops.com  # Dominios para Let's Encrypt
+      - LETSENCRYPT_EMAIL=jpcc141999@gmail.com  # Tu correo para Let's Encrypt (importante para la gestión del SSL)
     depends_on:
       - back
 
@@ -49,9 +51,24 @@ services:
       # - "443:443"
     volumes:
       - /run/docker.sock:/tmp/docker.sock:ro
-      # - ./nginx/certs:/etc/nginx/certs:ro
-      # - ./nginx/vhost.d:/etc/nginx/vhost.d  # Montar la configuración de vhost
-      # - ./nginx/html:/usr/share/nginx/html
+      - ./nginx/certs:/etc/nginx/certs:ro
+      - ./nginx/vhost.d:/etc/nginx/vhost.d  # Montar la configuración de vhost
+      - ./nginx/html:/usr/share/nginx/html
+    networks:
+      - dnet
+  
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: letsencrypt
+    depends_on:
+      - nginx-proxy
+    volumes:
+      - /run/docker.sock:/var/run/docker.sock:ro  # El mismo docker.sock que en nginx-proxy
+      - ./nginx/certs:/etc/nginx/certs  # Compartir certificados SSL entre los contenedores
+      - ./nginx/vhost.d:/etc/nginx/vhost.d
+      - ./nginx/html:/usr/share/nginx/html
+    environment:
+      - NGINX_PROXY_CONTAINER=nginx-proxy  # Nombre del contenedor nginx-proxy para Let’s Encrypt
     networks:
       - dnet
 
