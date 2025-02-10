@@ -15,4 +15,4 @@ docker pull jpcc141999/back_jenkis:$LATEST_TAG_BACK
 docker pull jpcc141999/front_jenkis:$LATEST_TAG_FRONT
 docker pull jpcc141999/db_jenkis:$LATEST_TAG_DB
 
-bash
+bash exec.sh
