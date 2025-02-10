@@ -29,7 +29,7 @@ services:
       - dnet
     volumes:
     # en este volumen debes pasar la ruta del servidor host, ya que jenkis le esta pasando la ruta del contenedor de jenkis y ese es el problema
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - /jenkins-data/workspace/test job/Docker-_container_run/nginx.conf:/etc/nginx/conf.d/default.conf
     #por ejemplo si pones solo .nginx.conf, osea haciedno referencia del archivo que esta es el mismo directorio donde esta el yml file, no se va a poder, ya que jenkis fue montado,
     #para tomar los recursos del servidor padre osea la maquina host (ec2 de amazon, o tu maquina local), asi que cuando vayas a compartor un documento es documento esta en el workspace
     #del ael servidor padre
